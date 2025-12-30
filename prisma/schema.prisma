@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Course {
+  id          String @id @default(uuid())
+  title       String
+  slug        String @unique
+  description String
+  level       String
+
+  seoTitle       String?
+  seoDescription String?
+
+  lessons Lesson[]
+
+  createdAt DateTime @default(now())
+}
+
+model Lesson {
+  id       String @id @default(uuid())
+  courseId String
+
+  title   String
+  slug    String
+  content String
+
+  course       Course       @relation(fields: [courseId], references: [id])
+  vocabularies Vocabulary[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([courseId, slug])
+}
+
+model Vocabulary {
+  id       String @id @default(uuid())
+  lessonId String
+
+  word     String
+  hanzi    String
+  pinyin   String
+  meaning  String
+  audioUrl String?
+
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([word])
+}
+
+model Registration {
+  id     String  @id @default(uuid())
+  name   String
+  phone  String
+  email  String?
+  note   String?
+  course String?
+
+  createdAt DateTime @default(now())
+}
